@@ -1,0 +1,8 @@
+{
+  "concepts":      ["Addition Whole Numbers", "Addition Proper Fractions", "Area Rectangle"],
+  "correct":       [1, 0, 1],
+  "elapsed_sec":   [42.0, 85.0, 60.0],
+  "lag_sec":       [0.0, 300.0, 600.0],
+  "targets":       ["Algebraic Solving", "Area Circle"],
+  "budget_minutes": 30
+}

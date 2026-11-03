@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+*.log
+
+# Large experiment artifacts, models, and checkpoints (Light subfolders only)
+artifacts/
+artifacts/**
+artifacts_*/
+experiments/results_beta_0.6_full_eval/
+*.pt
+*.pth
+*.params
+*.bin
+*.tar
+*.gz
+*.zip
+*.npz
+*.npy
+*.csv
+results_assist17_full_*.json
+
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.bak

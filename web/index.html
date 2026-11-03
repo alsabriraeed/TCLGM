@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCLGM — Time-Constrained Learning Goal Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="dark-theme">
+  <!-- App Container -->
+  <div id="app" class="app-layout">
+    
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="nav-brand">
+        <div class="brand-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">TCLGM</span>
+          <span class="brand-subtitle">Adaptive Pedagogical Pathfinding</span>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <div class="dataset-pill">
+          <label for="datasetSelect">Dataset:</label>
+          <select id="datasetSelect" class="styled-select-sm">
+            <option value="ASSISST2012" selected>ASSISST2012 (196 Concepts)</option>
+            <option value="ASSISST2017">ASSISST2017 (102 Concepts)</option>
+          </select>
+        </div>
+
+        <div class="server-status-badge online" id="serverStatusBadge">
+          <span class="status-dot"></span>
+          <span class="status-label">Inference Engine Active</span>
+        </div>
+
+        <button id="sidebarToggleBtn" class="icon-btn" title="Toggle Right Sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="15" y1="3" x2="15" y2="21"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace (Center Canvas + Right Sidebar) -->
+    <main class="main-workspace">
+      
+      <!-- Center: Interactive Knowledge Graph Visualizer Canvas -->
+      <section class="canvas-panel">
+        <div class="canvas-header">
+          <div class="canvas-title-group">
+            <h2 class="canvas-title">Knowledge Prerequisite & Collaborative Topology</h2>
+            <span class="canvas-desc">Interactive dual-view topology with real-time learner mastery & path highlight</span>
+          </div>
+          <div class="canvas-actions">
+            <button id="zoomInBtn" class="canvas-tool-btn" title="Zoom In">+</button>
+            <button id="zoomOutBtn" class="canvas-tool-btn" title="Zoom Out">-</button>
+            <button id="resetGraphBtn" class="canvas-tool-btn" title="Reset View">Reset</button>
+          </div>
+        </div>
+
+        <div class="graph-viewport-container">
+          <svg id="knowledgeGraphSvg" class="graph-svg"></svg>
+          
+          <!-- Legend Overlay -->
+          <div class="graph-legend">
+            <div class="legend-item"><span class="legend-color mastered-color"></span> Mastered (&ge;85%)</div>
+            <div class="legend-item"><span class="legend-color inpath-color"></span> Recommended Path</div>
+            <div class="legend-item"><span class="legend-color target-color"></span> Target Goal</div>
+            <div class="legend-item"><span class="legend-color normal-color"></span> Unmastered</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Sidebar Panel: Path Recommendation Tab & Controls -->
+      <aside id="rightSidebar" class="right-sidebar">
+        
+        <!-- Sidebar Navigation Tabs -->
+        <div class="sidebar-tabs-bar">
+          <button class="sidebar-tab-btn active" data-tab="path-tab" id="pathRecommendationTabBtn">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+              <path d="M13 13l6 6"/>
+            </svg>
+            <span>Path Recommendation</span>
+          </button>
+          <button class="sidebar-tab-btn" data-tab="history-tab">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Student History</span>
+          </button>
+        </div>
+
+        <!-- Sidebar Tab Contents -->
+        <div class="sidebar-scrollable-content">
+          
+          <!-- TAB 1: Path Recommendation Panel -->
+          <div id="path-tab" class="tab-pane active">
+            
+            <!-- Controls Card -->
+            <div class="glass-card controls-card">
+              <div class="card-section-title">
+                <span class="step-num">1</span>
+                <h3>Configuration & Inputs</h3>
+              </div>
+
+              <!-- Student ID Dropdown -->
+              <div class="form-group">
+                <label for="studentSelect" class="form-label">
+                  <span>Student ID</span>
+                  <span class="label-hint" id="studentCountBadge">Loading...</span>
+                </label>
+                <div class="select-wrapper">
+                  <select id="studentSelect" class="styled-select">
+                    <option value="" disabled selected>Loading students...</option>
+                  </select>
+                </div>
+                <div id="studentDetailSnippet" class="student-snippet"></div>
+              </div>
+
+              <!-- Available Time Dropdown (Minutes) -->
+              <div class="form-group">
+                <label for="timeBudgetSelect" class="form-label">
+                  <span>Available Time Budget</span>
+                  <span class="badge-accent">Physical Minutes</span>
+                </label>
+                <div class="select-wrapper">
+                  <select id="timeBudgetSelect" class="styled-select">
+                    <option value="5">5 minutes (Quick review)</option>
+                    <option value="10">10 minutes (Micro session)</option>
+                    <option value="15">15 minutes (Standard micro)</option>
+                    <option value="20">20 minutes (Targeted sprint)</option>
+                    <option value="25">25 minutes (Pomodoro focus)</option>
+                    <option value="30" selected>30 minutes (Standard study session)</option>
+                    <option value="35">35 minutes (Extended focus)</option>
+                    <option value="40">40 minutes (Deep study session)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Target Goals Selection -->
+              <div class="form-group">
+                <label for="targetConceptSelect" class="form-label">
+                  <span>Target Learning Goals (Optional)</span>
+                  <span class="label-hint">Auto-discovers frontier if empty</span>
+                </label>
+                <select id="targetConceptSelect" class="styled-select">
+                  <option value="__auto__">✨ Auto-Detect Cognitive Frontier (Recommended)</option>
+                </select>
+              </div>
+
+              <!-- Action Button -->
+              <button id="generatePathBtn" class="primary-action-btn">
+                <span class="btn-icon">🚀</span>
+                <span class="btn-text">Generate Recommended Path</span>
+                <span class="btn-glow"></span>
+              </button>
+            </div>
+
+            <!-- Loading Skeleton State -->
+            <div id="loadingState" class="loading-state hidden">
+              <div class="pulsing-radar"></div>
+              <p class="loading-text">Optimizing pedagogical path with 6-stage budget constraints...</p>
+            </div>
+
+            <!-- Output Visualizations Container -->
+            <div id="recommendationResults" class="recommendation-results hidden">
+              
+              <!-- 1. Executive Summary Metrics Gauges -->
+              <div class="glass-card metrics-card">
+                <h3 class="section-title">📊 Mastery Diagnostics & Learning Gain</h3>
+                
+                <div class="gauge-grid">
+                  <!-- Current Learning Level -->
+                  <div class="gauge-box">
+                    <div class="radial-gauge">
+                      <svg viewBox="0 0 100 100" class="gauge-svg">
+                        <circle class="gauge-bg" cx="50" cy="50" r="42" />
+                        <circle id="currentLevelCircle" class="gauge-bar current-bar" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="120" />
+                      </svg>
+                      <div class="gauge-val" id="currentLevelVal">54.4%</div>
+                    </div>
+                    <span class="gauge-caption">Current Learning Level</span>
+                  </div>
+
+                  <!-- Predicted Level After Path -->
+                  <div class="gauge-box">
+                    <div class="radial-gauge">
+                      <svg viewBox="0 0 100 100" class="gauge-svg">
+                        <circle class="gauge-bg" cx="50" cy="50" r="42" />
+                        <circle id="predictedLevelCircle" class="gauge-bar predicted-bar" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="65" />
+                      </svg>
+                      <div class="gauge-val highlight" id="predictedLevelVal">75.6%</div>
+                    </div>
+                    <span class="gauge-caption">Predicted Level After Path</span>
+                  </div>
+                </div>
+
+                <!-- KPI Metric Pills Grid -->
+                <div class="kpi-grid">
+                  <div class="kpi-item">
+                    <span class="kpi-label">Global Gain</span>
+                    <span class="kpi-val gain" id="globalGainVal">+0.465</span>
+                  </div>
+                  <div class="kpi-item">
+                    <span class="kpi-label">Target Gain</span>
+                    <span class="kpi-val gain" id="targetGainVal">+0.490</span>
+                  </div>
+                  <div class="kpi-item">
+                    <span class="kpi-label">Estimated Time</span>
+                    <span class="kpi-val" id="estimatedTimeVal">29.1 min</span>
+                  </div>
+                  <div class="kpi-item">
+                    <span class="kpi-label">Concepts Mastered</span>
+                    <span class="kpi-val" id="masteredCountChange">7 &rarr; 67</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Already Mastered Concepts Section -->
+              <div class="glass-card mastered-concepts-card">
+                <div class="card-collapsible-header" id="toggleMasteredConcepts">
+                  <div class="header-left">
+                    <span class="badge-icon">🏆</span>
+                    <h3 class="section-title">Already Mastered Concepts (&ge;85%)</h3>
+                    <span class="count-pill" id="masteredCountPill">7</span>
+                  </div>
+                  <button class="chevron-btn">&#9662;</button>
+                </div>
+                <div id="masteredConceptsList" class="mastered-chips-grid"></div>
+              </div>
+
+              <!-- 3. Recommended Path Step-by-Step Pipeline (DAG) -->
+              <div class="glass-card path-pipeline-card">
+                <div class="pipeline-header">
+                  <div class="header-left">
+                    <span class="badge-icon">🗺️</span>
+                    <h3 class="section-title">Recommended Adaptive Path</h3>
+                  </div>
+                  <span class="path-steps-badge" id="pathStepsCount">15 Steps</span>
+                </div>
+                
+                <div class="next-step-callout" id="nextConceptCallout">
+                  <span class="callout-label">Next Up:</span>
+                  <span class="callout-concept" id="nextConceptName">Area Trapezoid</span>
+                </div>
+
+                <!-- Step-by-Step Pipeline Flow -->
+                <div id="pathPipelineContainer" class="pipeline-flow"></div>
+              </div>
+
+              <!-- 4. Before vs After Mastery Comparison Chart -->
+              <div class="glass-card chart-card">
+                <h3 class="section-title">📈 Mastery Level Before & After Path</h3>
+                <p class="chart-subtitle">Direct comparison of mastery progression per concept</p>
+                <div id="masteryComparisonChart" class="mastery-bars-container"></div>
+              </div>
+
+              <!-- 5. Newly Mastered Milestones -->
+              <div class="glass-card achievements-card" id="newlyMasteredCard">
+                <h3 class="section-title">⭐ Newly Mastered Milestones</h3>
+                <p class="chart-subtitle">Concepts expected to cross the 85% mastery threshold</p>
+                <div id="newlyMasteredChips" class="milestone-chips-grid"></div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- TAB 2: Student History Panel -->
+          <div id="history-tab" class="tab-pane">
+            <div class="glass-card history-card">
+              <h3 class="section-title">Learner Historical Log</h3>
+              <p class="chart-subtitle">Sequential interaction timeline recorded in dataset</p>
+              <div id="studentHistoryTimeline" class="history-timeline"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </aside>
+
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

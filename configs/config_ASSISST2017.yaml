@@ -1,0 +1,97 @@
+seed: 42
+device: cuda:1
+
+# Path to the directory containing tempo interaction data for ASSISST2017.
+# The processed CSV used for training is expected at:
+#   <data_dir>/processed/interactions_processed.csv
+data_dir: /home/raed/Initial_tempo_ablation/Light/data/ASSISST2017
+
+data:
+  split_strategy: user
+  train_fraction: 0.80
+  val_fraction: 0.00
+  test_fraction: 0.20
+  max_elapsed_seconds: 300.0
+  max_history: 100
+  policy_target_horizon: 5
+  min_history: 4
+
+graph:
+  embedding_dim: 64
+  gcn_layers: 2
+  tau: 0.2
+  topology_epochs: 1000
+  lr: 0.001
+  transition_confidence: 0.70
+  collaborative_similarity: 0.85
+  min_shared_learners: 5
+  hard_edge_confidence: 0.80
+
+learner_encoder:
+  hidden_dim: 64
+  dropout: 0.1
+
+time_model:
+  hidden_dim: 128
+  dropout: 0.1
+  epochs: 200
+  batch_size: 512
+  lr: 0.001
+  weight_decay: 0.00001
+  early_stopping_patience: 25
+  max_train_samples: 100000
+  max_val_samples: 20000
+  nominal_quantile: 0.90
+
+simulator:
+  # -- Unified pyKT DKT cognitive mastery evaluator --
+  use_src_dkt: false
+  model_type: pykt_dkt
+  emb_size: 64
+  hidden_dim: 64
+  dropout: 0.1
+  epochs: 25
+  batch_size: 64
+  lr: 0.001
+  early_stopping_patience: 5
+  max_attempts: 4
+  reward_rollouts: 2
+
+goals:
+  mastery_threshold: 0.85
+  ancestor_discount: 0.80
+  max_review_goals: 8
+  curriculum_weight: 0.15
+
+candidate_constructor:
+  max_candidates: 30
+
+decoder:
+  hidden_dim: 128
+  dropout: 0.1
+  epochs: 50 
+  batch_size: 32
+  lr: 0.0003
+  weight_decay: 0.00001
+  gamma: 0.99
+  entropy_weight: 0.01
+  critic_weight: 0.5
+  kt_weight: 0.01
+  gradient_clip: 5.0
+  max_steps: 40
+  min_steps: 5
+  stop_bias: -2.5
+
+constraints: {}
+
+training:
+  episodes_per_epoch: 500 # Number of learners rolled out per epoch 
+  target_gain_weight: 0.70
+  global_gain_weight: 0.30
+  reward_scale: 100.0
+  budget_fractions: [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]
+
+evaluation:
+  budget_fraction: 0.75
+  eval_fractions: [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]
+  max_episodes: null
